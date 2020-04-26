@@ -3,8 +3,11 @@ import java.util.Scanner;
 public class Etude04 {
 	public static void main (String [] args) {
 		// get input, define n and k
-		int n;
-		int k;
+		Scanner sc = new Scanner(System.in);
+		int n = sc.nextInt();
+		int k = sc.nextInt();
+		
+		
 		
 		
 		// math:
