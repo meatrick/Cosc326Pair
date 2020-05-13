@@ -6,12 +6,15 @@ import java.util.Vector;
 public class Etude02 { 
 	public static String[] orderings = {"d/m/y", "d/y/m", "m/d/y", "m/y/d", "y/d/m", "y/m/d"};
 	public static int[] daysPerMonth = {-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	public static String[] monthToString = {"NULL", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+			"Aug", "Sep", "Oct", "Nov", "Dec"};
 	
 	// has 3 ints that represent each part of the date separated by the slash
 	public static class Date {
 		int first;
 		int second;
 		int third;
+		String input = "";
 		Vector<String> errorMessages;
 		
 		Date(int first, int second, int third) {
@@ -99,7 +102,63 @@ public class Etude02 {
 		return false;
 	}
 	
-	
+	public static String getOutput(Date date, int ordering) {
+		int day = -1, month = -1, year = -1;
+		
+		if (ordering == 0) {
+			day = date.first;
+			month = date.second;
+			year = date.third;
+		} else if (ordering == 1) {
+			day = date.first;
+			month = date.third;
+			year = date.second;
+		} else if (ordering == 2) {
+			day = date.second;
+			month = date.first;
+			year = date.third;
+		} else if (ordering == 3) {
+			day = date.third;
+			month = date.first;
+			year = date.second;
+		} else if (ordering == 4) {
+			day = date.second;
+			month = date.third;
+			year = date.first;
+		} else if (ordering == 5) {
+			day = date.third;
+			month = date.second;
+			year = date.first;
+		}
+		
+		if (date.errorMessages.get(ordering) != "") {
+			return date.input + " - INVALID: " + date.errorMessages.get(ordering);
+		}
+		
+		// convert day to string
+		String dayStr, monthStr, yearStr;
+		if (day < 10) {
+			dayStr = "0" + String.valueOf(day);
+		} else {
+			dayStr = String.valueOf(day);
+		}
+		
+		// convert month to string
+		monthStr = monthToString[month];
+		
+		// convert year to string
+		if (year < 100) {
+			if (year <= 49) {
+				year += 2000;
+			} else if (year >= 50) {
+				year += 1900;
+			}
+		}
+		yearStr = String.valueOf(year);
+		
+		
+		return dayStr + " " + monthStr + " " + yearStr;
+	}
 	
 	public static void main (String [] args) {
 		// read input and store into objects
@@ -116,6 +175,7 @@ public class Etude02 {
 				}
 			}
 			Date date = new Date(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+			date.input = line;
 			dates.add(date);
 		}
 		
@@ -144,7 +204,10 @@ public class Etude02 {
 			}
 		}
 		
-		// print the ordering with the least errors, according to output format requirements
-		// TODO: create method that, given ordering, prints the dates and the error messages
+		// print the ordering with the fewest errors, according to output format requirements
+		for (Date date : dates) {
+			String output = getOutput(date, bestOrdering);
+			System.out.println(output);
+		}		
 	}
 }
