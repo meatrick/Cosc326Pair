@@ -42,6 +42,7 @@ public class BusRoutes {
   public void addRouteTo(Route route) {
    if (!routes_to.contains(route)); {
     routes_to.add(route);    
+    System.out.println(getRoutesTo().size());
    }
   }
   
@@ -117,7 +118,6 @@ public class BusRoutes {
    Route route = new Route(city_from, city_to, fare);
    city_from.addRouteFrom(route);
    city_to.addRouteTo(route);
-   
    if (!all_routes.contains(route)) {
     all_routes.add(route);
    } else {
@@ -184,18 +184,17 @@ public class BusRoutes {
    
   
    while(!cities.isEmpty()) {
-     System.out.println(cities);
+    System.out.println(cities);
     City v = cities.poll();
     System.out.println(v.getCityName());
     List <Route> routes= new LinkedList<Route>();
-    //routes = v.cityTo
-    
-    
+    routes = v.getRoutesTo();
     System.out.println(routes);
     for(int i = 0; i < routes.size(); i++) {
       Route r = routes.get(i);
       City dest = r.getDest(); 
       cities.add(r.getDest());
+      
       
      if(dest.getBestDist() > v.getBestDist() + r.getFare()) {
       v.setBestDist(v.getBestDist () + r.getFare());
@@ -243,10 +242,6 @@ public class BusRoutes {
  //  filename = //"src/Cosc326Pair/" //+ filename;
    
    File input_file = new File(filename);
-   
-   if(input_file.exists()){
-     System.out.println("FUCKYOUCUNT");
-   }
    
   //C:\Users\Maclean\Desktop\jkjk\fucking.txt
   
