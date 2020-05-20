@@ -2,22 +2,25 @@ import java.util.*;
 import java.io.*;
 
 public class BusRoutes {
- public static class City {
+ public static class City implements Comparable<City>{
   String city_name;
-  List<Route> routes_from;
-  List<Route> routes_to;
+  ArrayList<Route> routes_from;
+  ArrayList<Route> routes_to;
   double bestDist;
-  List<City>bestRoute;
+  ArrayList<City>bestRoute;
   
   public City(String city_name) {
    this.city_name = city_name;
-   this.routes_from = new LinkedList<Route>();
-   this.routes_to = new LinkedList<Route>();
-   this.bestRoute = new LinkedList<City>();
+   this.routes_from = new ArrayList<Route>();
+   this.routes_to = new ArrayList<Route>();
+   this.bestRoute = new ArrayList<City>();
    
    
   }
   
+  public int compareTo(City c){
+    return Double.compare(bestDist, c.bestDist);
+  }
   public String getCityName() {
    return city_name;
   }
@@ -25,25 +28,26 @@ public class BusRoutes {
    this.city_name = city_name;
   }
   
-  public List<Route> getRoutesFrom() {
+  public ArrayList<Route> getRoutesFrom() {
    return routes_from;
   }
   
+  
   public void addRouteFrom(Route route) {
-   if (!routes_from.contains(route)) {
+    
     routes_from.add(route);    
-   }
+   
   }
   
-  public List<Route> getRoutesTo() {
+  public ArrayList<Route> getRoutesTo() {
    return routes_to;
   }
   
   public void addRouteTo(Route route) {
-   if (!routes_to.contains(route)); {
+   
     routes_to.add(route);    
-    System.out.println(getRoutesTo().size());
-   }
+    
+   
   }
   
  
@@ -56,12 +60,16 @@ public class BusRoutes {
    return bestDist;
   }
   
-  public void setBestRoute(City bestRoute){
-   this.bestRoute.add(bestRoute);
+  public void setBestRoute(ArrayList <City> bestRoute){
+   this.bestRoute = bestRoute;
    
   }
   
-  public List<City> getBestRoute(){
+  public void clearBest(){
+    this.bestRoute.clear();
+  }
+  
+  public ArrayList<City> getBestRoute(){
    return bestRoute;
   }
   
@@ -84,20 +92,25 @@ public class BusRoutes {
   public City getDest(){
     return city_to;
   }
+  
+  public void setDest(City dest){
+    this.city_to = dest;
  }
+ }
+ 
   
   
   
  
  public static class RouteMap {
-  List<City> all_cities;
-  List<Route> all_routes;
-  List<String> all_cities_str;
+  ArrayList<City> all_cities;
+  ArrayList<Route> all_routes;
+  ArrayList<String> all_cities_str;
   
   public RouteMap() {
-    this.all_cities = new LinkedList<City>();
-    this.all_routes  = new LinkedList<Route>();
-    this.all_cities_str = new LinkedList<String>();
+    this.all_cities = new ArrayList<City>();
+    this.all_routes  = new ArrayList<Route>();
+    this.all_cities_str = new ArrayList<String>();
   }
   
   public int length() {
@@ -114,13 +127,31 @@ public class BusRoutes {
    }
   }
   
-  public void addRoute(City city_from, City city_to, double fare) throws Exception {
-   Route route = new Route(city_from, city_to, fare);
-   city_from.addRouteFrom(route);
-   city_to.addRouteTo(route);
-   if (!all_routes.contains(route)) {
-    all_routes.add(route);
-   } else {
+public void addRoute(City city_from, City city_to, double fare) throws Exception {
+   Route routeFrom = new Route(city_from, city_to, fare);
+   Route routeTo = new Route(city_to, city_from, fare);
+   int q = all_cities_str.indexOf(city_from.getCityName());
+   if(q >= 0){
+     City w = all_cities.get(q);
+     w.addRouteFrom(routeFrom);
+     
+   }
+   else{
+     city_from.addRouteFrom(routeFrom);
+   }
+  
+   city_to.addRouteTo(routeTo);
+   if (!all_routes.contains(routeTo)) {
+    all_routes.add(routeTo);
+   }
+   else {
+    throw new Exception("Invalid: Non-unique routes");
+   }
+   
+   if(!all_routes.contains(routeFrom)){
+     all_routes.add(routeFrom);
+   }
+   else {
     throw new Exception("Invalid: Non-unique routes");
    }
    
@@ -128,32 +159,35 @@ public class BusRoutes {
   
   public void addRoute(String city_from_str, String city_to_str, double fare) throws Exception {
    City city_from, city_to;
-   
-   // create and add the cities if they don't exist
-     // COULD BE FUCKED
-   if (!containsCityCalled(city_from_str)) {
+
+   if (!all_cities_str.contains(city_from_str)) {
     city_from = new City(city_from_str);
     addCity(city_from);
+    
    }
 
     else {
-    int city_from_index = all_cities.indexOf(new City(city_from_str));
+    int city_from_index = all_cities_str.indexOf((city_from_str)); //used to be new
     city_from = all_cities.get(city_from_index);
    }
-   if (!containsCityCalled(city_to_str)) {
+   if (!all_cities_str.contains(city_to_str)) {
     city_to = new City(city_to_str);
     addCity(city_to);
+
+    
    } else {
-    int city_to_index = all_cities.indexOf(new City(city_to_str));
-    city_to = all_cities.get(city_to_index);
+    int city_to_index = all_cities_str.indexOf((city_to_str));
+    city_to = all_cities.get(city_to_index); //watch indexes
    }
+   
    
    addRoute(city_from, city_to, fare);
       
   }
   
+  
   public boolean containsCityCalled(String city) { 
-    if (all_cities.contains(new City(city))) {
+    if (all_cities.contains((city))) { //used to be new
     return true;
    }
    
@@ -164,56 +198,85 @@ public class BusRoutes {
   // TODO
   public Vector<City> findCheapestRoute(RouteMap rm, City city_from, City city_to) {
    Vector<City> final_route = new Vector<City>();
-   Queue<City> cities = new LinkedList<City>(); 
+   PriorityQueue<City> cities = new PriorityQueue<City>(); 
    //all_cities.size()
    
    for(int i = 0; i < all_cities.size(); i++) {
      City c = all_cities.get(i);
-     c.setBestDist(10000000);
+     c.setBestDist(10000);
      c.setBestRoute(null);
      
    }
    
-   cities.add(city_from);
-   City start = cities.peek();
-   start.setBestDist(0);
    
- //  for(int i = 0; i < length; i++) {
-   // cities.add(all_cities.get(i));
-   //}
+   for(int a = 0; a < all_cities.size(); a++){
+     if(all_cities.get(a).getCityName().equals(city_from.getCityName())){
+        
+        cities.add(all_cities.get(a));
+        cities.peek().setBestDist(0);
+        final_route.add(all_cities.get(a));
+     }
+   }
+
+   do {
    
-  
-   while(!cities.isEmpty()) {
-    System.out.println(cities);
     City v = cities.poll();
-    System.out.println(v.getCityName());
-    List <Route> routes= new LinkedList<Route>();
-    routes = v.getRoutesTo();
-    System.out.println(routes);
-    for(int i = 0; i < routes.size(); i++) {
+    ArrayList <Route> routes= new ArrayList<Route>();
+    routes = v.getRoutesFrom();
+    
+   
+   for(int i = 0; i < routes.size(); i++) {
       Route r = routes.get(i);
-      City dest = r.getDest(); 
+ 
+     
+     if(r.getDest().getBestDist() > v.getBestDist() + r.getFare()) {
+     
+      r.getDest().setBestDist(v.getBestDist () + r.getFare());
       cities.add(r.getDest());
+      ArrayList<City> br = new ArrayList<City>();
+      if(v.getBestRoute() != null){
+      for(int u = 0; u < v.getBestRoute().size(); u++){
+        br.add(u, v.getBestRoute().get(u));
+      }
+      }
+      
+        br.add(r.getDest());
+      
+      r.getDest().setBestRoute(br);
       
       
-     if(dest.getBestDist() > v.getBestDist() + r.getFare()) {
-      v.setBestDist(v.getBestDist () + r.getFare());
-      
-     // v.setBestRoute(r);
+
      }
     }
+   } while(!cities.isEmpty());
+    
+  for(int a = 0; a < all_cities.size(); a++){
+     if(all_cities.get(a).getCityName().equals(city_to.getCityName())){
+         
+        
+     
+   
+  for(int x = 0; x < all_cities.get(a).getBestRoute().size(); x++){   
+    final_route.add(all_cities.get(a).getBestRoute().get(x));
    }
+     }
+  }
+
+   
    return final_route;
   }
- 
- 
+  
+  
  }
+ 
+ 
+ 
 
  // TODO
  public static void main(String [] Args) {
   // create RouteMap 
    RouteMap rm = new RouteMap();
-   int length = 0;
+
   
   // debug
 //  File file = new File(".");
@@ -280,7 +343,7 @@ public class BusRoutes {
     }
     
     
-    length++;
+    
     String city_from_str = inputs[0], city_to_str = inputs[1], fare_str = inputs[2];
     double fare = Double.parseDouble(fare_str.trim());
     rm.addRoute(city_from_str.trim(), city_to_str.trim(), fare);
@@ -297,8 +360,11 @@ public class BusRoutes {
 
   
   // output the cheapest route
+  
   for (int i = 0; i < final_route.size(); i++) {
+    if(final_route.get(i) != null){
    System.out.print(final_route.get(i).city_name);
+    }
    
    if (i != final_route.size()-1) {
     System.out.print("-");
@@ -310,5 +376,6 @@ public class BusRoutes {
   
   return;
  }
+ }
  
-}
+ 
