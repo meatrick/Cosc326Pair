@@ -1,10 +1,9 @@
-package Cosc326Pair;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.Collections;
+import java.util.Comparator;
 
 
 public class Etude10 {
@@ -12,11 +11,11 @@ public class Etude10 {
 	final int LAB_DESK_MAX = 25;
 	final int JOB_NUMBER_MAX = 99;
 	
-	public class SortFiles implements Comparator<OrderedFile> {
+	public static class SortFiles implements Comparator<OrderedFile> {
 		public int compareTo(int a, int b) {
 			if (a == b) return 0;
 			if (a > b) return 1;
-			if (a < b) return -1;
+			else return -1;
 		}
 
 		public int compare(OrderedFile a, OrderedFile b) {
@@ -34,13 +33,12 @@ public class Etude10 {
 				} else {
 					return lab_desk_compare;
 				}
-			} else {
-				return job_number_compare;
-			}
+			} 
+			return job_site_compare;
 		}
 	}
 
-	public class OrderedFile extends File {
+	public static class OrderedFile extends File {
 		final int job_site;
 		final int lab_desk;
 		final int job_number;
@@ -50,10 +48,11 @@ public class Etude10 {
 
 			String name = this.getName();
 			String[] filename_data = name.split("-");
+			String job_number_str = filename_data[2].substring(0, 2);
 			
 			job_site = Integer.valueOf(filename_data[0]);
 			lab_desk = Integer.valueOf(filename_data[1]);
-			job_number = Integer.valueOf(filename_data[2]);
+			job_number = Integer.valueOf(job_number_str);
 		}
 
 		public int get_job_site() {
@@ -104,21 +103,33 @@ public class Etude10 {
 	}
 
 	public static void main(String [] args) {
-		String directory_name = args[0]; // directory name given from command line arguments
+		String directory_name = "";
+		try {
+			directory_name = args[0]; // directory name given from command line arguments
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.err.println("no command line arg given.");
+			return;
+		}
 		
 		File directory = new File(directory_name);
+
 
 		Vector<File> files = file_finder(directory);
 
 		// convert all files into OrderedFile objects
 		Vector<OrderedFile> ordered_files = new Vector<OrderedFile>();
 		for (File file : files) {
-			OrderedFile ordered_file = OrderedFile(file.getName());
+			OrderedFile ordered_file = new OrderedFile(file.getName());
 			ordered_files.add(ordered_file);
 		}
 
 		// sort the orderedfiles
-		Collections.sort(ordered_files, SortFiles);
+		Collections.sort(ordered_files, new SortFiles());
+
+		// debug
+		for (OrderedFile f : ordered_files) {
+			System.err.println(f.getName());
+		}
 		
 		// having saved all file names recorded as FileName objects, created an ordered List
 		// read each file in order, concatenating the file contents into result.txt
