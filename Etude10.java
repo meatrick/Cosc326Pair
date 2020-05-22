@@ -1,9 +1,8 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.Collections;
 import java.util.Comparator;
+import java.io.*;
 
 
 public class Etude10 {
@@ -125,15 +124,24 @@ public class Etude10 {
 
 		// sort the orderedfiles
 		Collections.sort(ordered_files, new SortFiles());
-
-		// debug
-		for (OrderedFile f : ordered_files) {
-			System.err.println(f.getName());
-		}
 		
-		// having saved all file names recorded as FileName objects, created an ordered List
 		// read each file in order, concatenating the file contents into result.txt
 		// each file gets a new line
-		
+		try {
+			FileWriter fw = new FileWriter("result.txt");
+			for (OrderedFile file : ordered_files) {
+				System.err.println("reading file: " + file.getName());
+				BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath));
+				String line = "";
+				while ((line = br.readLine()) != null)  {
+					fw.write(line);
+				}
+				fw.write("\n");
+			}
+			fw.close();
+		} catch (IOException e) {
+			System.err.println("a file error occured");
+			e.printStackTrace();
+		}
 	}
 }
