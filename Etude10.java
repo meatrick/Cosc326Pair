@@ -41,19 +41,30 @@ public class Etude10 {
 		final int job_site;
 		final int lab_desk;
 		final int job_number;
+		final String original_path;
 
 		public OrderedFile(String path_name) {
 			super(path_name);
 
+			
 			String name = this.getName();
+			// System.err.println("name: " + getName());
+
 			String[] filename_data = name.split("-");
 			String job_number_str = filename_data[2].substring(0, 2);
 			
 			job_site = Integer.valueOf(filename_data[0]);
 			lab_desk = Integer.valueOf(filename_data[1]);
 			job_number = Integer.valueOf(job_number_str);
+
+			original_path = getAbsolutePath();
+			// System.err.println("original absolute path: " + original_path);
+			
 		}
 
+		public String get_original_path() {
+			return original_path;
+		}
 		public int get_job_site() {
 			return job_site;
 		}
@@ -93,6 +104,7 @@ public class Etude10 {
 		for (File file : files) {
 			if (file.isFile()) {
 				all_files.add(file);
+				// System.err.println(file.getAbsolutePath());
 			} else if (file.isDirectory()) {
 				Vector<File> sub_files = file_finder(file);
 				all_files.addAll(sub_files);
@@ -118,8 +130,16 @@ public class Etude10 {
 		// convert all files into OrderedFile objects
 		Vector<OrderedFile> ordered_files = new Vector<OrderedFile>();
 		for (File file : files) {
-			OrderedFile ordered_file = new OrderedFile(file.getName());
+			
+			String[] split = file.getName().split("-");
+			int pos = file.getName().indexOf(".txt");
+			if (pos == -1 || split.length != 3) {
+				continue; // invalid file name, skip this file
+			}
+
+			OrderedFile ordered_file = new OrderedFile(file.getAbsolutePath());
 			ordered_files.add(ordered_file);
+			
 		}
 
 		// sort the orderedfiles
@@ -129,16 +149,18 @@ public class Etude10 {
 		// each file gets a new line
 		try {
 			FileWriter fw = new FileWriter("result.txt");
+			BufferedReader br = null;
 			for (OrderedFile file : ordered_files) {
-				System.err.println("reading file: " + file.getName());
-				BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath));
+				// System.err.println("reading file: " + file.getName());
+				br = new BufferedReader(new FileReader(file.get_original_path()));
 				String line = "";
 				while ((line = br.readLine()) != null)  {
 					fw.write(line);
+					fw.write("\n");
 				}
-				fw.write("\n");
 			}
 			fw.close();
+			br.close();
 		} catch (IOException e) {
 			System.err.println("a file error occured");
 			e.printStackTrace();

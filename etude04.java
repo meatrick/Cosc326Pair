@@ -16,7 +16,7 @@ public class Etude04 {
 		int denominator_start = k;
 		int denominator_end = 1;
 		
-		double solution = 1;
+		int solution = 1;
 		for (int i = numerator_start; i >= numerator_end; i--) {
 			solution *= i;
 		}
@@ -25,6 +25,7 @@ public class Etude04 {
 		}
 		
 		// print solution
+		System.out.println(solution);
 		
 	}
 	
