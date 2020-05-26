@@ -1,4 +1,3 @@
-import java.util.Scanner;
 import java.util.Vector;
 import java.util.Collections;
 import java.util.Comparator;
@@ -6,9 +5,10 @@ import java.io.*;
 
 
 public class Etude10 {
-	final int JOB_SITE_MAX = 5;
-	final int LAB_DESK_MAX = 25;
-	final int JOB_NUMBER_MAX = 99;
+	final static int JOB_SITE_MAX = 5;
+	final static int LAB_DESK_MAX = 25;
+	final static int JOB_NUMBER_MAX = 99;
+	final static char[] ACCEPTABLE_SEPARATORS = {'-', '.', '_', '/'};
 	
 	public static class SortFiles implements Comparator<OrderedFile> {
 		public int compareTo(int a, int b) {
@@ -38,27 +38,60 @@ public class Etude10 {
 	}
 
 	public static class OrderedFile extends File {
-		final int job_site;
-		final int lab_desk;
-		final int job_number;
-		final String original_path;
+		int job_site;
+		int lab_desk;
+		int job_number;
+		String original_path;
 
 		public OrderedFile(String path_name) {
 			super(path_name);
 
+			original_path = getAbsolutePath();
+			// System.err.println("original absolute path: " + original_path);
 			
 			String name = this.getName();
 			// System.err.println("name: " + getName());
 
-			String[] filename_data = name.split("-");
-			String job_number_str = filename_data[2].substring(0, 2);
-			
-			job_site = Integer.valueOf(filename_data[0]);
-			lab_desk = Integer.valueOf(filename_data[1]);
-			job_number = Integer.valueOf(job_number_str);
+			// DONE: try splitting around each different type of separator
+			// DONE:  splitting once for each separator, allowing varying types
+			// DONE: ignore the fact that we need an extension: this is built in, I believe
+			// TODO: handle if there is no separator at all: split every two characters
+			// TODO: account for not adding leading zeroes on single digit numbers
 
-			original_path = getAbsolutePath();
-			// System.err.println("original absolute path: " + original_path);
+			String[] filename_data = name.split("-");
+
+		
+			
+			// normal case
+			if (filename_data.length == 3) {
+
+				String job_number_str = filename_data[2];
+				// remove extension if there is one
+				if (filename_data[2].length() > 2) {
+					job_number_str = filename_data[2].substring(0, 2); // remove extension
+				}
+
+				job_site = Integer.valueOf(filename_data[0]);
+				lab_desk = Integer.valueOf(filename_data[1]);
+				job_number = Integer.valueOf(job_number_str);
+			} else { // irregular separators
+				Vector<Integer> indexes = new Vector<Integer>();
+				int index = 0;
+				String name_cpy = name;
+				while (index != -1) {
+					for (int i = 0; i < ACCEPTABLE_SEPARATORS.length; i++) {
+						index = name_cpy.indexOf(ACCEPTABLE_SEPARATORS[i]);
+						if (index != -1) {
+							indexes.add(index);
+							name_cpy = name_cpy.substring(index + 1);
+							break;
+						}
+					}
+
+				}
+			}
+			
+
 			
 		}
 
@@ -131,11 +164,13 @@ public class Etude10 {
 		Vector<OrderedFile> ordered_files = new Vector<OrderedFile>();
 		for (File file : files) {
 			
-			String[] split = file.getName().split("-");
-			int pos = file.getName().indexOf(".txt");
-			if (pos == -1 || split.length != 3) {
-				continue; // invalid file name, skip this file
-			}
+			// check if the file has the valid syntax
+			// String[] split = file.getName().split("-");
+			// int pos = file.getName().indexOf(".txt");
+			// if (pos == -1 || split.length != 3) {
+			// 	System.err.println("invalid file name");
+			// 	continue; // invalid file name, skip this file
+			// }
 
 			OrderedFile ordered_file = new OrderedFile(file.getAbsolutePath());
 			ordered_files.add(ordered_file);
