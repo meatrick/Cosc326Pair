@@ -1,5 +1,3 @@
-package Cosc326Pair;
-
 import java.util.Scanner;
 import java.util.Vector;
 
