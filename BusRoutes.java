@@ -277,7 +277,7 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
   // create RouteMap 
    RouteMap rm = new RouteMap();
 
-  
+  System.out.println("HELLO ETUDE 12")
   // debug
 //  File file = new File(".");
 //  for(String fileNames : file.list()) System.out.println(fileNames);
