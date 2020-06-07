@@ -17,7 +17,7 @@ public class TelephoneSystem{
       return this.eastPos;
     }
     
-    public void setNP(double eastPos){
+    public void setNP(double northPos){
       this.northPos = northPos;
     }
     
@@ -27,7 +27,7 @@ public class TelephoneSystem{
     
     
     public class TelephoneRadius{
-      ArrayList <Telephone> telephones =  new ArrayList();
+      ArrayList <Telephone> telephones =  new ArrayList<Telephone>();
       
     }
   }
@@ -36,24 +36,11 @@ public class TelephoneSystem{
   
   
   public static void main (String[]args){
-    
-    
-    Scanner sc = new Scanner(System.in);
-    String filename = "";
-    
-    try {
-      filename = sc.nextLine().trim();   
-    } catch (NoSuchElementException e) {
-      System.out.println("Invalid: No input");
-      return;
-    }
-    try {
-   
-   
-      File input_file = new File(filename);
+        
+    try {      
       
-      
-      Scanner ifile = new Scanner(input_file);
+      // input file comes in directly through stdin e.g. java Etude05 < input_file.txt
+      Scanner ifile = new Scanner(System.in);
       
       String[] inputs;
       while (ifile.hasNextLine()) {

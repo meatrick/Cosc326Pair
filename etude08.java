@@ -1,5 +1,3 @@
-package Cosc326Pair;
-
 import java.util.*;
 import java.io.*;
 
@@ -135,15 +133,7 @@ public class Etude08 {
 //		for(String fileNames : file.list()) System.out.println(fileNames);
 		
 		// get filename from stdin
-		Scanner sc = new Scanner(System.in);
-		String filename = "";
 		
-		try {
-			filename = sc.nextLine().trim();			
-		} catch (NoSuchElementException e) {
-			System.out.println("Invalid: No input");
-			return;
-		}
 		
 		City final_city_from = null, final_city_to = null;
 		
@@ -152,10 +142,8 @@ public class Etude08 {
 		try {
 			// load file into scanner
 			// TEMPORARY 
-			filename = "src/Cosc326Pair/" + filename;
 			
-			File input_file = new File(filename);
-			Scanner ifile = new Scanner(input_file);
+			Scanner ifile = new Scanner(System.in);
 			
 			
 			// first line handled separately
