@@ -35,53 +35,53 @@ public class Etude04 {
 		// get input, define n and k
 		Scanner sc = new Scanner(System.in);
 		int n = sc.nextInt();
-		int k = sc.nextInt();
+		long k = sc.nextInt();
 		
 		// System.err.println("n: " + Integer.toString(n) + "k: " + Integer.toString(k));
 		
 		
 		// math:
-		int numerator_start = n;
-		int numerator_end = n-k+1;
-		int denominator_start = k;
-		int denominator_end = 1;
+		long numerator_start = n;
+		long numerator_end = n-k+1;
+		long denominator_start = k;
+		long denominator_end = 1;
 
 		/**
 		 * Solution that I imagine is insufficient
 		 */
-		// int solution = 1;
-		// for (int i = numerator_start; i >= numerator_end; i--) {
+		// long solution = 1;
+		// for (long i = numerator_start; i >= numerator_end; i--) {
 		// 	solution *= i;
 		// }
-		// for (int i = denominator_start; i >= denominator_end; i--) {
+		// for (long i = denominator_start; i >= denominator_end; i--) {
 		// 	solution /= i;
 		// }
 		
 		/**
 		 * This solution is slower but decresases the likelihood of the integer overflowing
 		 */
-		int solution = 1;
-		Vector<Integer> skips = new Vector<Integer>();
-		for (int i = numerator_start; i >= numerator_end; i--) {
-			System.err.print("solution * numerator: " + Integer.toString(solution) + " * " + Integer.toString(i));
+		long solution = 1;
+		Vector<Long> skips = new Vector<Long>();
+		for (long i = numerator_start; i >= numerator_end; i--) {
+			// System.err.print("solution * numerator: " + Long.toString(solution) + " * " + Long.toString(i));
 			solution *= i;
-			System.err.println(" = " + Integer.toString(solution));
-			for (int j = denominator_start; j >= denominator_end; j--) {
+			// System.err.println(" = " + Long.toString(solution));
+			for (long j = denominator_start; j >= denominator_end; j--) {
 				if (skips.contains(j)) continue;
 				double check = (double) solution;
 				if (check % j == 0) {
-					System.err.print(Integer.toString(solution) + " is divisible by " + Integer.toString(j));
+					// System.err.print(Long.toString(solution) + " is divisible by " + Long.toString(j));
 					solution /= j;
-					System.err.println(" which equals " + Integer.toString(solution));
+					// System.err.println(" which equals " + Long.toString(solution));
 					skips.add(j);
 				}
 			}
 		}
-		for (int i = denominator_start; i >= denominator_end; i--) {
+		for (long i = denominator_start; i >= denominator_end; i--) {
 			if (skips.contains(i)) continue;
-			System.err.print("solution / denom: " + Integer.toString(solution) + " / " + Integer.toString(i));
+			// System.err.print("solution / denom: " + Long.toString(solution) + " / " + Long.toString(i));
 			solution /= i;
-			System.err.println(" = " + Integer.toString(solution));
+			// System.err.println(" = " + Long.toString(solution));
 		}
 
 		/**
@@ -89,7 +89,7 @@ public class Etude04 {
 		 */
 		// double solution = 1;
 		// boolean keepGoing = true, numerator_empty = false, denominator_empty = false;
-		// int numerator = numerator_start, denominator = denominator_start;
+		// long numerator = numerator_start, denominator = denominator_start;
 		// while (keepGoing) {
 		// 	if (!numerator_empty) {
 		// 		// System.err.print("solution * numerator: " + solution + " * " + numerator);
@@ -120,8 +120,8 @@ public class Etude04 {
 		 */
 		// Vector<Integer> partial_products = new Vector<Integer>();
 		// partial_products.add(1);
-		// int next_solution = 1;
-		// for (int i = numerator_start; i >= numerator_end; i--) {
+		// long next_solution = 1;
+		// for (long i = numerator_start; i >= numerator_end; i--) {
 		// 	next_solution = partial_products.lastElement() * i;
 		// 	if (next_solution < partial_products.lastElement()) {
 		// 		// memory error: add new partial product
@@ -131,7 +131,7 @@ public class Etude04 {
 		// 		partial_products.set(partial_products.size() - 1, next_solution);
 		// 	}
 		// }
-		// for (int i = denominator_start; i >= denominator_end; i--) {
+		// for (long i = denominator_start; i >= denominator_end; i--) {
 		// 	solution /= i;
 		// }
 
