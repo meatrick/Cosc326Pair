@@ -120,20 +120,47 @@ public class TelephoneSystem{
       }
     }
 
+    // new arraylist will only contain circles with 12 or less points in them
+    ArrayList<Circle> validCircles = new ArrayList<Circle>();
+
+    // if a circle contains 14 points, the final radius can be no larger than that circles radius
+    // we can use this information to eliminate potential circles from processing
+    double maxRadius = Double.MAX_VALUE;
     
     // count the number of points each circle contains
     for (int i = 0; i < allCircles.size(); i++) {
       Circle c = allCircles.get(i);
+
+      // skip this circle because its radius is too big
+      if (c.radius >= maxRadius) {
+        continue;
+      }
+
       int numPointsContained = countPointsInCircle(c, allTelephones);
       c.numPointsContained = numPointsContained;
+
+      // this radius, and all radii larger, belong to invalid circles
+      if (numPointsContained >= 14) {
+        maxRadius = c.radius;
+      }
+
+      // circle is valid only if it has 12 points in it
+      if (numPointsContained == 12) {
+        validCircles.add(c);
+      }
     }
     
     // TESTING: print out all circles
-    for (Circle c : allCircles) {
+    // for (Circle c : allCircles) {
+    //   System.err.println(c);
+    // }
+
+    // TESTING: print out only valid circles
+    // this output should not have any circles with numPoints==12
+    for (Circle c : validCircles) {
       System.err.println(c);
     }
-    
-
+      
   }
 
   // Function to count all of the points contained within a circle
