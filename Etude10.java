@@ -55,12 +55,13 @@ public class Etude10 {
 			// DONE: try splitting around each different type of separator
 			// DONE:  splitting once for each separator, allowing varying types
 			// DONE: ignore the fact that we need an extension: this is built in, I believe
-			// TODO: allow for commas instead of .s for the extensions
-			// TODO: handle if there is no separator at all: split every two characters
-			// TODO: account for not adding leading zeroes on single digit numbers
+			// DONE: allow for commas instead of .s for the extensions
+			// DONE: handle if there is no separator at all: split every two characters
 			// TODO: what if there are folders with the same name as a file?
 			// TODO: what if there are duplicate files
 
+
+			
 			String[] filename_data = name.split("-");
 
 			
@@ -78,44 +79,69 @@ public class Etude10 {
 				job_site = Integer.valueOf(filename_data[0]);
 				lab_desk = Integer.valueOf(filename_data[1]);
 				job_number = Integer.valueOf(job_number_str);
-			} else { // irregular separators
+			} else { 
 				System.err.println("irregular separators");
-				ArrayList<Integer> indexes = new ArrayList<Integer>();
-				int fromIndex = 0;
-				int index;
-				while (true) {
-					// look for an occurence of every type of separator
-					boolean foundSeparator = false;
-					for (int i = 0; i < ACCEPTABLE_SEPARATORS.length; i++) {
-						index = name.indexOf(ACCEPTABLE_SEPARATORS[i], fromIndex);
-						if (index != -1) { // separator found
-							indexes.add(index);
-							fromIndex = index + 1;
-							foundSeparator = true;
-						}
-					}
-					// if a separator is not found after a whole loop, there are none left
-					if (indexes.size() >= 2 || !foundSeparator) {
-						break;
+				// forget about separators, just get the numbers 2 by 2
+				ArrayList<Character> nums = new ArrayList<Character>();
+				for (int i = 0; i < name.length(); i++) {
+					char c = name.charAt(i);
+					if (c >= 48 && c <= 57) { // if char is a number
+						nums.add(c);
+						// System.err.println("Adding: " + c);
 					}
 				}
-				// having found the indexes of the separators, create the appropriate file object
-				ArrayList<String> data = new ArrayList<String>();
-				data.add(name.substring(0,indexes.get(0)));
-				data.add(name.substring(indexes.get(0)+1, indexes.get(1)));
-
-				// if there is a file extension, remove it
-				if (!(indexes.get(1) + 3 >= name.length())) {
-					String jobNumberString = name.substring(indexes.get(1)+1, indexes.get(1)+3);
-					data.add(jobNumberString);
+				if (nums.size() != 6) {
+					// big error
 				} else {
-					data.add(name.substring(indexes.get(1)+1));
+					String job_site_str = Character.toString(nums.get(0));
+					job_site_str += Character.toString(nums.get(1));
+					String lab_desk_str = Character.toString(nums.get(2));
+					lab_desk_str += Character.toString(nums.get(3));
+					String job_number_str = Character.toString(nums.get(4));
+					job_number_str += Character.toString(nums.get(5));
+					
+					job_site = Integer.valueOf(job_site_str);
+					lab_desk = Integer.valueOf(lab_desk_str);
+					job_number = Integer.valueOf(job_number_str);
 				}
 
-				// fill the data
-				job_site = Integer.parseInt(data.get(0));
-				lab_desk = Integer.parseInt(data.get(1));
-				job_number = Integer.parseInt(data.get(2));
+				// System.err.println("irregular separators");
+				// ArrayList<Integer> indexes = new ArrayList<Integer>();
+				// int fromIndex = 0;
+				// int index;
+				// while (true) {
+				// 	// look for an occurence of every type of separator
+				// 	boolean foundSeparator = false;
+				// 	for (int i = 0; i < ACCEPTABLE_SEPARATORS.length; i++) {
+				// 		index = name.indexOf(ACCEPTABLE_SEPARATORS[i], fromIndex);
+				// 		if (index != -1) { // separator found
+				// 			indexes.add(index);
+				// 			fromIndex = index + 1;
+				// 			foundSeparator = true;
+				// 		}
+				// 	}
+				// 	// if a separator is not found after a whole loop, there are none left
+				// 	if (indexes.size() >= 2 || !foundSeparator) {
+				// 		break;
+				// 	}
+				// }
+				// // having found the indexes of the separators, create the appropriate file object
+				// ArrayList<String> data = new ArrayList<String>();
+				// data.add(name.substring(0,indexes.get(0)));
+				// data.add(name.substring(indexes.get(0)+1, indexes.get(1)));
+
+				// // if there is a file extension, remove it
+				// if (!(indexes.get(1) + 3 >= name.length())) {
+				// 	String jobNumberString = name.substring(indexes.get(1)+1, indexes.get(1)+3);
+				// 	data.add(jobNumberString);
+				// } else {
+				// 	data.add(name.substring(indexes.get(1)+1));
+				// }
+
+				// // fill the data
+				// job_site = Integer.parseInt(data.get(0));
+				// lab_desk = Integer.parseInt(data.get(1));
+				// job_number = Integer.parseInt(data.get(2));
 			}
 			
 
