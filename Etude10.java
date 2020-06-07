@@ -1,4 +1,4 @@
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.io.*;
@@ -8,7 +8,7 @@ public class Etude10 {
 	final static int JOB_SITE_MAX = 5;
 	final static int LAB_DESK_MAX = 25;
 	final static int JOB_NUMBER_MAX = 99;
-	final static char[] ACCEPTABLE_SEPARATORS = {'-', '.', '_', '/'};
+	final static char[] ACCEPTABLE_SEPARATORS = {'-', '_', '/', ' '};
 	
 	public static class SortFiles implements Comparator<OrderedFile> {
 		public int compareTo(int a, int b) {
@@ -50,20 +50,24 @@ public class Etude10 {
 			// System.err.println("original absolute path: " + original_path);
 			
 			String name = this.getName();
-			// System.err.println("name: " + getName());
+			System.err.println("name: " + getName());
 
 			// DONE: try splitting around each different type of separator
 			// DONE:  splitting once for each separator, allowing varying types
 			// DONE: ignore the fact that we need an extension: this is built in, I believe
+			// TODO: allow for commas instead of .s for the extensions
 			// TODO: handle if there is no separator at all: split every two characters
 			// TODO: account for not adding leading zeroes on single digit numbers
+			// TODO: what if there are folders with the same name as a file?
+			// TODO: what if there are duplicate files
 
 			String[] filename_data = name.split("-");
 
-		
+			
 			
 			// normal case
 			if (filename_data.length == 3) {
+				System.err.println("Normal file structure");
 
 				String job_number_str = filename_data[2];
 				// remove extension if there is one
@@ -75,20 +79,43 @@ public class Etude10 {
 				lab_desk = Integer.valueOf(filename_data[1]);
 				job_number = Integer.valueOf(job_number_str);
 			} else { // irregular separators
-				Vector<Integer> indexes = new Vector<Integer>();
-				int index = 0;
-				String name_cpy = name;
-				while (index != -1) {
+				System.err.println("irregular separators");
+				ArrayList<Integer> indexes = new ArrayList<Integer>();
+				int fromIndex = 0;
+				int index;
+				while (true) {
+					// look for an occurence of every type of separator
+					boolean foundSeparator = false;
 					for (int i = 0; i < ACCEPTABLE_SEPARATORS.length; i++) {
-						index = name_cpy.indexOf(ACCEPTABLE_SEPARATORS[i]);
-						if (index != -1) {
+						index = name.indexOf(ACCEPTABLE_SEPARATORS[i], fromIndex);
+						if (index != -1) { // separator found
 							indexes.add(index);
-							name_cpy = name_cpy.substring(index + 1);
-							break;
+							fromIndex = index + 1;
+							foundSeparator = true;
 						}
 					}
-
+					// if a separator is not found after a whole loop, there are none left
+					if (indexes.size() >= 2 || !foundSeparator) {
+						break;
+					}
 				}
+				// having found the indexes of the separators, create the appropriate file object
+				ArrayList<String> data = new ArrayList<String>();
+				data.add(name.substring(0,indexes.get(0)));
+				data.add(name.substring(indexes.get(0)+1, indexes.get(1)));
+
+				// if there is a file extension, remove it
+				if (!(indexes.get(1) + 3 >= name.length())) {
+					String jobNumberString = name.substring(indexes.get(1)+1, indexes.get(1)+3);
+					data.add(jobNumberString);
+				} else {
+					data.add(name.substring(indexes.get(1)+1));
+				}
+
+				// fill the data
+				job_site = Integer.parseInt(data.get(0));
+				lab_desk = Integer.parseInt(data.get(1));
+				job_number = Integer.parseInt(data.get(2));
 			}
 			
 
@@ -130,16 +157,16 @@ public class Etude10 {
 	/**
 	 *  Returns a list of all of the files in the system
 	 */
-	public static Vector<File> file_finder(File start_directory) {
+	public static ArrayList<File> file_finder(File start_directory) {
 		File[] files = start_directory.listFiles();
-		Vector<File> all_files = new Vector<File>();
+		ArrayList<File> all_files = new ArrayList<File>();
 		
 		for (File file : files) {
 			if (file.isFile()) {
 				all_files.add(file);
 				// System.err.println(file.getAbsolutePath());
 			} else if (file.isDirectory()) {
-				Vector<File> sub_files = file_finder(file);
+				ArrayList<File> sub_files = file_finder(file);
 				all_files.addAll(sub_files);
 			}
 		}
@@ -158,10 +185,10 @@ public class Etude10 {
 		File directory = new File(directory_name);
 
 
-		Vector<File> files = file_finder(directory);
+		ArrayList<File> files = file_finder(directory);
 
 		// convert all files into OrderedFile objects
-		Vector<OrderedFile> ordered_files = new Vector<OrderedFile>();
+		ArrayList<OrderedFile> ordered_files = new ArrayList<OrderedFile>();
 		for (File file : files) {
 			
 			// check if the file has the valid syntax
