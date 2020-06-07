@@ -1,5 +1,5 @@
 import java.util.Scanner;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Etude02 { 
 	public static String[] orderings = {"d/m/y", "d/y/m", "m/d/y", "m/y/d", "y/d/m", "y/m/d"};
@@ -13,14 +13,24 @@ public class Etude02 {
 		int second;
 		int third;
 		String input = "";
-		Vector<String> errorMessages;
+		ArrayList<String> errorMessages;
+		boolean isValidSyntax;
 		
 		Date(int first, int second, int third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
+
+			this.isValidSyntax = true;
 			
-			errorMessages = new Vector<String>();
+			errorMessages = new ArrayList<String>();
+
+		}
+
+		// Constructor for a Date with invalid syntax
+		Date(String input) {
+			this.input = input;
+			this.isValidSyntax = false;
 		}
 	}
 	
@@ -101,6 +111,12 @@ public class Etude02 {
 	}
 	
 	public static String getOutput(Date date, int ordering) {
+		// for invalid syntax cases, output is always the same, regardless of ordering
+		if (!date.isValidSyntax) {
+			return date.input + " - INVALID: invalid syntax";
+		}
+
+
 		int day = -1, month = -1, year = -1;
 		
 		if (ordering == 0) {
@@ -158,18 +174,61 @@ public class Etude02 {
 		return dayStr + " " + monthStr + " " + yearStr;
 	}
 	
+	/**
+	 * Helper function determines whether an input line has valid syntax
+	 */
+	public static boolean isValidSyntax(String line) {
+		// count the number of '/' in the string
+		int count = 0;
+		for (int i = 0; i < line.length(); i++) {
+			if (line.charAt(i) == '/') {
+				count++;
+			} 
+		}
+
+		// number of '/' must equal 2
+		if (count != 2) {
+			return false;
+		}
+
+		// ensure there are no empty parts of the input
+		String[] parts = line.split("/");
+		if (parts.length != 3) {
+			return false;
+		}
+		for (String part : parts) {
+			if (part.length() == 0) {
+				return false;
+			}
+		}
+
+		return true;
+
+	}
+
 	public static void main (String [] args) {
 		// read input and store into objects
-		Vector<Date> dates = new Vector<Date>();
+		ArrayList<Date> dates = new ArrayList<Date>();
 		Scanner scan = new Scanner(System.in);
 		String line = "";
 		while (scan.hasNextLine()) {
 			line = scan.nextLine();
+	
+			boolean valid_syntax = isValidSyntax(line);
+
+			// if the syntax is invalid, add the date to the list as invalid
+			if (!valid_syntax) {
+				Date date = new Date(line); // initialized Date as invalid
+				dates.add(date);
+				continue;
+			}
+			
 			String[] parts = line.split("/"); // splits the string into separate strings around the '/'
+
 			// remove leading zeroes (05/10/99 --> 5/10/99)
-			for (String str : parts) {
-				if (str.charAt(0) == '0') {
-					str = str.substring(1);
+			for (int i = 0; i < parts.length; i++) {
+				if (parts[i].charAt(0) == '0') {
+					parts[i] = parts[i].substring(1);
 				}
 			}
 			Date date = new Date(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
@@ -179,10 +238,14 @@ public class Etude02 {
 		
 		// attempt all 6 orderings for each date
 		// each index represents the number of errors each ordering produces
-		Vector<Integer> numberOfErrors = new Vector<Integer>();
+		ArrayList<Integer> numberOfErrors = new ArrayList<Integer>();
 		for (int i = 0; i < 6; i++) {
 			numberOfErrors.add(0);
 			for (Date date : dates) {
+				// skip dates if they are invalid syntax
+				if (!date.isValidSyntax) {
+					continue;
+				}
 				String errorMsg = testOrdering(date, i);
 				date.errorMessages.add(errorMsg); // add to Date object for printing later
 				if (errorMsg != "") {
