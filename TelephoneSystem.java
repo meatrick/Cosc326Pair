@@ -43,6 +43,7 @@ public class TelephoneSystem{
   public static class Circle {
     double eastPos, northPos;
     double radius;
+    int numPointsContained = -1;
 
     public Circle(double eastPos, double northPos, double radius) {
       this.eastPos = eastPos;
@@ -51,7 +52,7 @@ public class TelephoneSystem{
     }
 
     public String toString() {
-      return "(" + eastPos + ", " + northPos + "), r=" + radius; 
+      return "(" + eastPos + ", " + northPos + "), r=" + radius + " numPoints=" + numPointsContained; 
     }
   }
   
@@ -119,15 +120,42 @@ public class TelephoneSystem{
       }
     }
 
+    
+    // count the number of points each circle contains
+    for (int i = 0; i < allCircles.size(); i++) {
+      Circle c = allCircles.get(i);
+      int numPointsContained = countPointsInCircle(c, allTelephones);
+      c.numPointsContained = numPointsContained;
+    }
+    
     // TESTING: print out all circles
     for (Circle c : allCircles) {
       System.err.println(c);
     }
-
-
     
 
   }
+
+  // Function to count all of the points contained within a circle
+  public static int countPointsInCircle(Circle circle, ArrayList<Telephone> allTelephones) {
+    int pointsContained = 0;
+    for (Telephone t : allTelephones) {
+      if (calculateDistanceBetweenPoints(t.eastPos, t.northPos, circle.eastPos, circle.northPos) 
+      < circle.radius) {
+        pointsContained++;
+      }
+    }
+    return pointsContained;
+  }
+
+  // from "https://www.baeldung.com/java-distance-between-two-points"
+  public static double calculateDistanceBetweenPoints(
+  double x1, 
+  double y1, 
+  double x2, 
+  double y2) {       
+    return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+}
 
   // Function to find the circle on which the given three points lie 
   // derived from "https://www.geeksforgeeks.org/equation-of-circle-when-three-points-on-the-circle-are-given/"
