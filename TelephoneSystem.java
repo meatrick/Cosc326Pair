@@ -141,7 +141,7 @@ public class TelephoneSystem{
     int pointsContained = 0;
     for (Telephone t : allTelephones) {
       if (calculateDistanceBetweenPoints(t.eastPos, t.northPos, circle.eastPos, circle.northPos) 
-      < circle.radius) {
+      <= circle.radius) {
         pointsContained++;
       }
     }
