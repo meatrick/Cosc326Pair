@@ -88,8 +88,18 @@ public class TelephoneSystem{
         double eastPos = Double.parseDouble(inputs[0]), northPos = Double.parseDouble(inputs[1]);
         Telephone telephone = new Telephone(eastPos, northPos);
 
-        // add Telephone to list of telephones
-        allTelephones.add(telephone);
+        // add Telephone to list of telephones if there are no duplicates
+        boolean duplicate = false;
+        for (int i = 0; i < allTelephones.size(); i++) {
+          Telephone t = allTelephones.get(i);
+          if (t.eastPos == telephone.eastPos && t.northPos == telephone.northPos) {
+            duplicate = true;
+            break;
+          }
+        }
+        if (!duplicate) {
+          allTelephones.add(telephone);
+        }
       
       }
     } catch(Exception e) {
@@ -106,6 +116,8 @@ public class TelephoneSystem{
 
     // Create all possible circles out of three points
     ArrayList<Circle> allCircles = new ArrayList<Circle>();
+
+    
 
     for (int i = 0; i < allTelephones.size(); i++) {
       Telephone t1 = allTelephones.get(i);
@@ -156,7 +168,7 @@ public class TelephoneSystem{
     // }
 
     // TESTING: print out only valid circles
-    // this output should not have any circles with numPoints==12
+    // this output should only have any circles with numPoints==12
     for (Circle c : validCircles) {
       System.err.println(c);
     }
@@ -170,6 +182,10 @@ public class TelephoneSystem{
       if (calculateDistanceBetweenPoints(t.eastPos, t.northPos, circle.eastPos, circle.northPos) 
       <= circle.radius) {
         pointsContained++;
+      }
+      // terminate early if it exceeds 14 points
+      if (pointsContained >= 14) {
+        return pointsContained;
       }
     }
     return pointsContained;
