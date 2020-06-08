@@ -54,6 +54,10 @@ public class TelephoneSystem{
     public String toString() {
       return "(" + eastPos + ", " + northPos + "), r=" + radius + " numPoints=" + numPointsContained; 
     }
+    
+    public double getRadius(){
+      return radius;
+    }
   }
   
   
@@ -69,7 +73,9 @@ public class TelephoneSystem{
       
       // first line should be "Telephone sites"
       String line = ifile.nextLine();
+      System.out.println("FUCK");
       if (!line.equals("Telephone sites")) {
+        
         throw new Exception("First line is invalid");
       }
 
@@ -172,6 +178,15 @@ public class TelephoneSystem{
     for (Circle c : validCircles) {
       System.err.println(c);
     }
+    
+    double bestRadius = Double.POSITIVE_INFINITY;
+    for(Circle cir : validCircles){
+      if(cir.getRadius() < bestRadius){
+        bestRadius = cir.getRadius();
+      }
+    }
+    System.out.println("Maximum range: " + bestRadius);
+      
       
   }
 
