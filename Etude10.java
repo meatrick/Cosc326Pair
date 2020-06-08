@@ -50,7 +50,7 @@ public class Etude10 {
 			// System.err.println("original absolute path: " + original_path);
 			
 			String name = this.getName();
-			System.err.println("name: " + getName());
+			System.err.print("name: " + getName());
 
 			// DONE: try splitting around each different type of separator
 			// DONE:  splitting once for each separator, allowing varying types
@@ -66,21 +66,21 @@ public class Etude10 {
 
 			
 			
-			// normal case
-			if (filename_data.length == 3) {
-				System.err.println("Normal file structure");
+			// // normal case
+			// if (filename_data.length == 3) {
+			// 	System.err.println("Normal file structure");
 
-				String job_number_str = filename_data[2];
-				// remove extension if there is one
-				if (filename_data[2].length() > 2) {
-					job_number_str = filename_data[2].substring(0, 2); // remove extension
-				}
+			// 	String job_number_str = filename_data[2];
+			// 	// remove extension if there is one
+			// 	if (filename_data[2].length() > 2) {
+			// 		job_number_str = filename_data[2].substring(0, 2); // remove extension
+			// 	}
 
-				job_site = Integer.valueOf(filename_data[0]);
-				lab_desk = Integer.valueOf(filename_data[1]);
-				job_number = Integer.valueOf(job_number_str);
-			} else { 
-				System.err.println("irregular separators");
+			// 	job_site = Integer.valueOf(filename_data[0]);
+			// 	lab_desk = Integer.valueOf(filename_data[1]);
+			// 	job_number = Integer.valueOf(job_number_str);
+			// } else { 
+				// System.err.println("irregular separators");
 				// forget about separators, just get the numbers 2 by 2
 				ArrayList<Character> nums = new ArrayList<Character>();
 				for (int i = 0; i < name.length(); i++) {
@@ -103,6 +103,8 @@ public class Etude10 {
 					job_site = Integer.valueOf(job_site_str);
 					lab_desk = Integer.valueOf(lab_desk_str);
 					job_number = Integer.valueOf(job_number_str);
+
+					System.err.println(": " + job_site_str + " " + lab_desk_str + " " + job_number_str);
 				}
 
 				// System.err.println("irregular separators");
@@ -142,7 +144,7 @@ public class Etude10 {
 				// job_site = Integer.parseInt(data.get(0));
 				// lab_desk = Integer.parseInt(data.get(1));
 				// job_number = Integer.parseInt(data.get(2));
-			}
+			// }
 			
 
 			
