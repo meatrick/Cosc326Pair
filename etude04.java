@@ -35,7 +35,7 @@ public class Etude04 {
 		// get input, define n and k
 		Scanner sc = new Scanner(System.in);
 		int n = sc.nextInt();
-		long k = sc.nextInt();
+		int k = sc.nextInt();
 		
 		// System.err.println("n: " + Integer.toString(n) + "k: " + Integer.toString(k));
 		
@@ -46,20 +46,12 @@ public class Etude04 {
 		long denominator_start = k;
 		long denominator_end = 1;
 
-		/**
-		 * Solution that I imagine is insufficient
-		 */
-		// long solution = 1;
-		// for (long i = numerator_start; i >= numerator_end; i--) {
-		// 	solution *= i;
-		// }
-		// for (long i = denominator_start; i >= denominator_end; i--) {
-		// 	solution /= i;
-		// }
+	
 		
 		/**
 		 * This solution is slower but decresases the likelihood of the integer overflowing
 		 */
+		/*
 		long solution = 1;
 		Vector<Long> skips = new Vector<Long>();
 		for (long i = numerator_start; i >= numerator_end; i--) {
@@ -83,64 +75,39 @@ public class Etude04 {
 			solution /= i;
 			// System.err.println(" = " + Long.toString(solution));
 		}
+		*/
 
-		/**
-		 * Solution that isn't viable beacuse it uses doubles
-		 */
-		// double solution = 1;
-		// boolean keepGoing = true, numerator_empty = false, denominator_empty = false;
-		// long numerator = numerator_start, denominator = denominator_start;
-		// while (keepGoing) {
-		// 	if (!numerator_empty) {
-		// 		// System.err.print("solution * numerator: " + solution + " * " + numerator);
-		// 		solution *= numerator;
-		// 		numerator--;
-		// 		if (numerator < numerator_end) {
-		// 			numerator_empty = true;
-		// 		}
-		// 		// System.err.println(" = " + solution);
-		// 	}
-		// 	if (!denominator_empty) {
-		// 		// System.err.print("solution / denominator: " + solution + " / " + denominator);
-		// 		solution /= denominator;
-		// 		denominator--;
-		// 		if (denominator < denominator_end) {
-		// 			denominator_empty = true;
-		// 		}
-		// 		// System.err.println(" = " + solution);
-		// 	}
-
-		// 	// System.err.println("solution: " + solution);
-		// 	keepGoing = (!numerator_empty || !denominator_empty);
-		// }
-
-		/**
-		 * Alternative solution if the current solution is insufficient: incomplete
-		 * 
-		 */
-		// Vector<Integer> partial_products = new Vector<Integer>();
-		// partial_products.add(1);
-		// long next_solution = 1;
-		// for (long i = numerator_start; i >= numerator_end; i--) {
-		// 	next_solution = partial_products.lastElement() * i;
-		// 	if (next_solution < partial_products.lastElement()) {
-		// 		// memory error: add new partial product
-		// 		partial_products.add(i);
-		// 	} else {
-		// 		// set the last partial product to its new solution
-		// 		partial_products.set(partial_products.size() - 1, next_solution);
-		// 	}
-		// }
-		// for (long i = denominator_start; i >= denominator_end; i--) {
-		// 	solution /= i;
-		// }
 
 		
 		
-		// print solution
-		System.out.println(solution);
 		
+
+		// n choose k is line n position k of pascal's triangle
+		// create a 2d array representing each line of the triangle, computing each index by adding
+		// from the previous line
+		
+		long[][] pascal = new long[n+1][n+1];
+
+		pascal[0][0] = 1; // first row
+		for (int row = 1; row < n+1; row++) { // skip first row
+			for (int col = 0; col < row+1; col++) { // num of columns = row + 1
+
+				// edge columns are always 1
+				if (col == 0 || col == row) {
+					pascal[row][col] = 1;
+				} 
+				else {
+					pascal[row][col] = pascal[row-1][col-1] + pascal[row-1][col];
+				}
+
+			}
+		}
+
+		System.out.println(pascal[n][k]);
+
 	}
+	
+	
 	
 
 }
