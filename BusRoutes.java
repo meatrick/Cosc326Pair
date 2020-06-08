@@ -296,8 +296,7 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
  //  filename = //"src/Cosc326Pair/" //+ filename;
    
    
-  //C:\Users\Maclean\Desktop\jkjk\fucking.txt
-  
+    // program takes input from command line like: java Etude08 < inputFile.txt
    Scanner ifile = new Scanner(System.in);
 
    
