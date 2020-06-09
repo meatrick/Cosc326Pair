@@ -278,21 +278,11 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
   // create RouteMap 
    RouteMap rm = new RouteMap();
 
-  System.out.println("HELLO ETUDE 12");
   // debug
 //  File file = new File(".");
 //  for(String fileNames : file.list()) System.out.println(fileNames);
   
   // get filename from stdin
-  Scanner sc = new Scanner(System.in);
-  String filename = "";
-  
-  try {
-   filename = sc.nextLine().trim();   
-  } catch (NoSuchElementException e) {
-   System.out.println("Invalid: No input");
-   return;
-  }
   
   City final_city_from = null, final_city_to = null;
   
@@ -305,11 +295,10 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    // TEMPORARY 
  //  filename = //"src/Cosc326Pair/" //+ filename;
    
-   File input_file = new File(filename);
    
-  //C:\Users\Maclean\Desktop\jkjk\fucking.txt
-  
-   Scanner ifile = new Scanner(input_file);
+    // program takes input from command line like: java Etude08 < inputFile.txt
+   Scanner ifile = new Scanner(System.in);
+
    
    
    // first line handled separately
@@ -373,7 +362,6 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
   } catch(Exception e) {
    System.out.println(e.getMessage());
    e.printStackTrace();
-   ;//TODO: remove
   }
   
   
@@ -393,8 +381,6 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
     System.out.print("-");
    }
   }
-  
-  sc.close();
   
   
   return;

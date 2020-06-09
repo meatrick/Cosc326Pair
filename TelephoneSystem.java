@@ -35,10 +35,6 @@ public class TelephoneSystem{
     }
   }
   
-  public static class TelephoneRadius{
-    ArrayList <Telephone> telephones =  new ArrayList<Telephone>();
-    
-  }
 
   public static class Circle {
     double eastPos, northPos;
@@ -73,7 +69,6 @@ public class TelephoneSystem{
       
       // first line should be "Telephone sites"
       String line = ifile.nextLine();
-      System.out.println("FUCK");
       if (!line.equals("Telephone sites")) {
         
         throw new Exception("First line is invalid");
@@ -175,9 +170,9 @@ public class TelephoneSystem{
 
     // TESTING: print out only valid circles
     // this output should only have any circles with numPoints==12
-    for (Circle c : validCircles) {
-      System.err.println(c);
-    }
+    // for (Circle c : validCircles) {
+    //   System.err.println(c);
+    // }
     
     double bestRadius = Double.POSITIVE_INFINITY;
     for(Circle cir : validCircles){
@@ -185,7 +180,11 @@ public class TelephoneSystem{
         bestRadius = cir.getRadius();
       }
     }
-    System.out.println("Maximum range: " + bestRadius);
+
+    // System.out.println("Maximum range: " + bestRadius);
+    // System.out.print("Maximum range - .01 to make that circle not enclose 12 pts: ");
+    System.out.format("%.2f", (bestRadius - .01));
+    System.out.println();
       
       
   }
