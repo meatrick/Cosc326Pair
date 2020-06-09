@@ -1,9 +1,13 @@
 import java.util.*;
-import java.io.*;
-import java.text.*; 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 
 public class TelephoneSystem{
+
+  // the number of decimal places given in the inputs.  Used for accuracy
+  static int decimalPlaces = -1;
+  static double threshold = -1; // the threshold used for double comparison
 
   public static class Telephone {
     public double eastPos;
@@ -45,6 +49,7 @@ public class TelephoneSystem{
       this.eastPos = eastPos;
       this.northPos = northPos;
       this.radius = radius;
+
     }
 
     public String toString() {
@@ -78,7 +83,17 @@ public class TelephoneSystem{
       String[] inputs;
       while (ifile.hasNextLine()) {
         line = ifile.nextLine();
-        inputs = line.split(" "); // split line into multiple strings, separated by space
+        inputs = line.split("\\s+"); // split line into multiple strings, separated by any whitespace
+
+        // determine the number of decimal places the input has
+        int integerPlaces = inputs[0].indexOf('.');
+        decimalPlaces = inputs[0].length() - integerPlaces - 1;
+        
+        // determine the threshold to be used for determining if a point lies on the boundary
+        threshold = 1;
+        for (int i = 0; i < decimalPlaces; i++) {
+          threshold /= 10;
+        }
 
         // Handle some invalid inputs
         if (inputs.length != 2) {
@@ -109,25 +124,28 @@ public class TelephoneSystem{
     }
 
     // TESTING: print out all telephones
-    // for (Telephone t : allTelephones) {
-    //   System.err.println(t);
-    // }
+    for (Telephone t : allTelephones) {
+      System.err.println(t);
+    }
 
     // Processing
 
-    // Create all possible circles out of three points
+    // Create all possible circles out of two or three points
     ArrayList<Circle> allCircles = new ArrayList<Circle>();
-
-    
 
     for (int i = 0; i < allTelephones.size(); i++) {
       Telephone t1 = allTelephones.get(i);
       for (int j = i + 1; j < allTelephones.size(); j++) {
         Telephone t2 = allTelephones.get(j);
+        Circle diametricCircle = findDiametricCircle(t1, t2);
+        allCircles.add(diametricCircle);
         for (int k = j + 1; k < allTelephones.size(); k++) {
           Telephone t3 = allTelephones.get(k);
-
-          Circle circle = findCircle(t1.eastPos, t1.northPos, t2.eastPos, t2.northPos, t3.eastPos, t3.northPos);
+          Circle circle = findCircle(t1, t2, t3);
+          // System.err.println(circle);
+          // System.err.println(t1);
+          // System.err.println(t2);
+          // System.err.println(t3);
           allCircles.add(circle);
         }
       }
@@ -141,6 +159,7 @@ public class TelephoneSystem{
     double maxRadius = Double.MAX_VALUE;
     
     // count the number of points each circle contains
+    int maxPointsFound = 0; // most points contained in any circle, used for special cases where there are few points
     for (int i = 0; i < allCircles.size(); i++) {
       Circle c = allCircles.get(i);
 
@@ -149,16 +168,28 @@ public class TelephoneSystem{
         continue;
       }
 
-      int numPointsContained = countPointsInCircle(c, allTelephones);
-      c.numPointsContained = numPointsContained;
+      // TODO: RETURN IF BOUNDARY POINTS FOR SPECIAL CASE
+      int[] numPointsContained = countPointsInCircle(c, allTelephones);
+      int interiorPoints = numPointsContained[0];
+      int boundaryPoints = numPointsContained[1];
+      int totalPoints = interiorPoints + boundaryPoints;
+      c.numPointsContained = totalPoints;
 
-      // this radius, and all radii larger, belong to invalid circles
-      if (numPointsContained >= 14) {
-        maxRadius = c.radius;
+      if (totalPoints > maxPointsFound) {
+        maxPointsFound = c.numPointsContained;
       }
 
-      // circle is valid only if it has 12 points in it
-      if (numPointsContained == 12) {
+      // this radius, and all radii larger, belong to invalid circles
+      if (interiorPoints > 12 && c.radius < maxRadius) {
+        maxRadius = c.radius;
+        System.err.println("new max radius: " + maxRadius);
+        continue;
+      }
+
+      // circle is valid only if it has 12 or less points in it 
+      // OR the number of points contained minus the boundary points is less than 12
+      // so when we reduce the boundary size at the end, the number of points remaining is less than 12
+      if (interiorPoints < 12 && c.radius < maxRadius) {
         validCircles.add(c);
       }
     }
@@ -170,39 +201,57 @@ public class TelephoneSystem{
 
     // TESTING: print out only valid circles
     // this output should only have any circles with numPoints==12
-    // for (Circle c : validCircles) {
-    //   System.err.println(c);
-    // }
+    for (Circle c : validCircles) {
+      System.err.println(c);
+    }
+
+    // special case
+    if (maxPointsFound < 12) {
+      System.out.println("Infinity");
+      return;
+    }
     
-    double bestRadius = Double.POSITIVE_INFINITY;
+    double bestRadius = Double.POSITIVE_INFINITY; // smallest radius of 12 point circle 
     for(Circle cir : validCircles){
-      if(cir.getRadius() < bestRadius){
-        bestRadius = cir.getRadius();
+      if(cir.numPointsContained >= 12 && cir.radius < bestRadius){
+        bestRadius = cir.radius;
       }
     }
 
-    // System.out.println("Maximum range: " + bestRadius);
-    // System.out.print("Maximum range - .01 to make that circle not enclose 12 pts: ");
-    System.out.format("%.2f", (bestRadius - .01));
-    System.out.println();
-      
-      
+    // subtract a small amount from the best radius: this is the output
+    // System.err.println("best radius: " + bestRadius);
+    double output = bestRadius - threshold;
+    output = round(output, decimalPlaces);
+    System.out.println(output);
   }
 
   // Function to count all of the points contained within a circle
-  public static int countPointsInCircle(Circle circle, ArrayList<Telephone> allTelephones) {
-    int pointsContained = 0;
+  public static int[] countPointsInCircle(Circle circle, ArrayList<Telephone> allTelephones) {
+    int interiorPoints = 0;
+    int boundaryPoints = 0;
+
     for (Telephone t : allTelephones) {
-      if (calculateDistanceBetweenPoints(t.eastPos, t.northPos, circle.eastPos, circle.northPos) 
-      <= circle.radius) {
-        pointsContained++;
+      double dist = calculateDistanceBetweenPoints(t.eastPos, t.northPos, circle.eastPos, circle.northPos);
+      // count interior and boundary points separately
+      if (dist < circle.radius) {
+        interiorPoints++;
+        // System.err.println("interior point");
+      } 
+      else if (Math.abs(dist - circle.radius) < threshold) {
+        // System.err.println("boundary point");
+        boundaryPoints++;
       }
-      // terminate early if it exceeds 14 points
-      if (pointsContained >= 14) {
-        return pointsContained;
+      
+      // terminate early if it exceeds 12 points inside the circle
+      if (interiorPoints >= 12) {
+        System.err.println("boundary Points: " + boundaryPoints);
+        int[] ret = {interiorPoints, boundaryPoints};
+        return ret;
       }
     }
-    return pointsContained;
+    System.err.println("boundary Points: " + boundaryPoints);
+    int[] ret = {interiorPoints, boundaryPoints};
+    return ret;
   }
 
   // from "https://www.baeldung.com/java-distance-between-two-points"
@@ -216,7 +265,11 @@ public class TelephoneSystem{
 
   // Function to find the circle on which the given three points lie 
   // derived from "https://www.geeksforgeeks.org/equation-of-circle-when-three-points-on-the-circle-are-given/"
-  public static Circle findCircle(double x1, double y1, double x2, double y2, double x3, double y3) { 
+  public static Circle findCircle(Telephone t1, Telephone t2, Telephone t3) { 
+    double x1 = t1.eastPos, y1 = t1.northPos;
+    double x2 = t2.eastPos, y2 = t2.northPos;
+    double x3 = t3.eastPos, y3 = t3.northPos;
+
     double x12 = x1 - x2; 
     double x13 = x1 - x3; 
 
@@ -273,6 +326,26 @@ public class TelephoneSystem{
 
     // System.out.println("Centre = (" + h + "," + k + ")"); 
     // System.out.println("Radius = " + df.format(r)); 
+  }
+
+  // makes a diametric circle given two points
+  public static Circle findDiametricCircle(Telephone t1, Telephone t2) {
+    double x1 = t1.eastPos, y1 = t1.northPos;
+    double x2 = t2.eastPos, y2 = t2.northPos;
+    double radius = calculateDistanceBetweenPoints(x1, y1, x2, y2) / 2;
+    double midpointx = Math.abs((x2+x1) / 2.0);
+    double midpointy = Math.abs((y1+y2)/ 2.0);
+
+    Circle c = new Circle(midpointx, midpointy, radius);
+    return c;
+  }
+
+  public static double round(double val, int places){
+    if(places < 0) throw new IllegalArgumentException();
+    
+    BigDecimal bigDecimal = new BigDecimal(val);
+    bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
+    return bigDecimal.doubleValue();
   }
 
 }
