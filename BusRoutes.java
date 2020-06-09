@@ -93,6 +93,14 @@ public class BusRoutes {
     return city_to;
   }
   
+  public City getFrom() {
+	  return city_from;
+  }
+  public City getTo() {
+	  return city_to;
+  }
+  
+  
   public void setDest(City dest){
     this.city_to = dest;
  }
@@ -131,35 +139,60 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    Route routeFrom = new Route(city_from, city_to, fare);
    Route routeTo = new Route(city_to, city_from, fare);
    int q = all_cities_str.indexOf(city_from.getCityName());
-   if(q >= 0){
-     City w = all_cities.get(q);
+   int contain = 1;
+   
+   City w = all_cities.get(q);
+   for(Route c : all_routes) {
+	   if((routeFrom.getTo().getCityName().equals(c.getTo().getCityName())) &&
+			   (routeFrom.getFrom().getCityName().equals(c.getDest().getCityName()))
+			   ||(routeTo.getTo().getCityName().equals(c.getFrom().getCityName())) && 
+			   (routeTo.getFrom().getCityName().equals(c.getTo().getCityName())))
+			   {
+		   System.out.println(city_from.getCityName());
+		   contain = 0;
+		   
+	   }
+   }
+   if(q >= 0 && contain == 1) {// && contain == 1){
+     
      w.addRouteFrom(routeFrom);
+     w.addRouteFrom(routeTo); //zzz
      
    }
-   else{
+   else if(contain == 1){
      city_from.addRouteFrom(routeFrom);
+     city_from.addRouteFrom(routeTo);
+   }
+   
+   else if (contain == 0) {
+	   System.out.println("Invalid: Non-unique routes");
    }
   
    city_to.addRouteTo(routeTo);
-   if (!all_routes.contains(routeTo)) {
+   if (!(all_routes.contains(routeTo) || all_routes.contains(routeFrom))) {
     all_routes.add(routeTo);
    }
-   else {
-    throw new Exception("Invalid: Non-unique routes");
-   }
+  // else {
+    //throw new Exception("Invalid: Non-unique routes");
+	 //  System.out.println("not unique1");
+   //}
    
-   if(!all_routes.contains(routeFrom)){
+   if(!(all_routes.contains(routeFrom) || all_routes.contains(routeTo))){
      all_routes.add(routeFrom);
    }
-   else {
-    throw new Exception("Invalid: Non-unique routes");
-   }
+   //else {
+   // throw new Exception("Invalid: Non-unique routes");
+	  // System.out.println("not unique2");
+   //}
    
   }
   
   public void addRoute(String city_from_str, String city_to_str, double fare) throws Exception {
    City city_from, city_to;
-
+   /*
+    * need to make sure cities dont have the same from and to even if fare is difff
+    * compare before adding
+    */
    if (!all_cities_str.contains(city_from_str)) {
     city_from = new City(city_from_str);
     addCity(city_from);
@@ -182,7 +215,7 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    
    
    addRoute(city_from, city_to, fare);
-   addRoute(city_to, city_from, fare);
+   
       
   }
   
@@ -315,8 +348,8 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    }catch (Exception e){
     System.out.println("Invalid: route");
    }
-   **/
    
+   **/
    if(inputs.length != 2){
      System.out.println("Invalid: route");
      return;
