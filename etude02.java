@@ -9,14 +9,14 @@ public class Etude02 {
 	
 	// has 3 ints that represent each part of the date separated by the slash
 	public static class Date {
-		int first;
-		int second;
-		int third;
+		String first;
+		String second;
+		String third;
 		String input = "";
 		ArrayList<String> errorMessages;
 		boolean isValidSyntax;
 		
-		Date(int first, int second, int third) {
+		Date(String first, String second, String third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
@@ -58,7 +58,29 @@ public class Etude02 {
 	// Input: the numbers from the date to treat as the day, month, and year
 	// Output: A string containing an error message to be displayed in the output.
 	// If the string is the empty string, the date is valid
-	public static String method0(int day, int month, int year) {
+	public static String method0(String day_str, String month_str, String year_str) {
+		// ensure each field has the appropriate number of digits
+
+		// day
+		if (day_str.length() != 1 && day_str.length() != 2) {
+			return "Day has invalid number of digits";
+		}
+
+		// month
+		if (month_str.length() != 1 && month_str.length() != 2) {
+			return "Month has invalid number of digits";
+		}
+
+		// year
+		if (year_str.length() != 2 && year_str.length() != 4) {
+			return "Year has invalid number of digits";
+		}
+
+		// convert strings to ints
+		int day = Integer.parseInt(day_str);
+		int month = Integer.parseInt(month_str);
+		int year = Integer.parseInt(year_str);
+
 		// convert single/double digit years to 1950-2049
 		if (year < 100) {
 			if (year <= 49) {
@@ -72,7 +94,7 @@ public class Etude02 {
 		if (year < 1753 || year > 3000) {
 			return "Year out of range.";
 		}
-		
+			
 		// check if month is in valid range
 		if (month > 12) {
 			return "Month out of range.";
@@ -116,33 +138,34 @@ public class Etude02 {
 			return date.input + " - INVALID: invalid syntax";
 		}
 
+		
 
 		int day = -1, month = -1, year = -1;
 		
 		if (ordering == 0) {
-			day = date.first;
-			month = date.second;
-			year = date.third;
+			day = Integer.parseInt(date.first);
+			month = Integer.parseInt(date.second);
+			year = Integer.parseInt(date.third);
 		} else if (ordering == 1) {
-			day = date.first;
-			month = date.third;
-			year = date.second;
+			day = Integer.parseInt(date.first);
+			month = Integer.parseInt(date.third);
+			year = Integer.parseInt(date.second);
 		} else if (ordering == 2) {
-			day = date.second;
-			month = date.first;
-			year = date.third;
+			day = Integer.parseInt(date.second);
+			month = Integer.parseInt(date.first);
+			year = Integer.parseInt(date.third);
 		} else if (ordering == 3) {
-			day = date.third;
-			month = date.first;
-			year = date.second;
+			day = Integer.parseInt(date.third);
+			month = Integer.parseInt(date.first);
+			year = Integer.parseInt(date.second);
 		} else if (ordering == 4) {
-			day = date.second;
-			month = date.third;
-			year = date.first;
+			day = Integer.parseInt(date.second);
+			month = Integer.parseInt(date.third);
+			year = Integer.parseInt(date.first);
 		} else if (ordering == 5) {
-			day = date.third;
-			month = date.second;
-			year = date.first;
+			day = Integer.parseInt(date.third);
+			month = Integer.parseInt(date.second);
+			year = Integer.parseInt(date.first);
 		}
 		
 		if (date.errorMessages.get(ordering) != "") {
@@ -196,6 +219,10 @@ public class Etude02 {
 		if (parts.length != 3) {
 			return false;
 		}
+		// trim whitespace
+		for (int i = 0; i < parts.length; i++) {
+			parts[i] = parts[i].trim();
+		}
 		for (String part : parts) {
 			if (part.length() == 0) {
 				return false;
@@ -225,13 +252,9 @@ public class Etude02 {
 			
 			String[] parts = line.split("/"); // splits the string into separate strings around the '/'
 
-			// remove leading zeroes (05/10/99 --> 5/10/99)
-			for (int i = 0; i < parts.length; i++) {
-				if (parts[i].charAt(0) == '0') {
-					parts[i] = parts[i].substring(1);
-				}
-			}
-			Date date = new Date(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+			
+			
+			Date date = new Date(parts[0], parts[1], parts[2]);
 			date.input = line;
 			dates.add(date);
 		}
