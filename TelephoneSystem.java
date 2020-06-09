@@ -124,9 +124,9 @@ public class TelephoneSystem{
     }
 
     // TESTING: print out all telephones
-    for (Telephone t : allTelephones) {
-      System.err.println(t);
-    }
+    // for (Telephone t : allTelephones) {
+    //   System.err.println(t);
+    // }
 
     // Processing
 
@@ -182,7 +182,7 @@ public class TelephoneSystem{
       // this radius, and all radii larger, belong to invalid circles
       if (interiorPoints > 12 && c.radius < maxRadius) {
         maxRadius = c.radius;
-        System.err.println("new max radius: " + maxRadius);
+        // System.err.println("new max radius: " + maxRadius);
         continue;
       }
 
@@ -201,9 +201,9 @@ public class TelephoneSystem{
 
     // TESTING: print out only valid circles
     // this output should only have any circles with numPoints==12
-    for (Circle c : validCircles) {
-      System.err.println(c);
-    }
+    // for (Circle c : validCircles) {
+    //   System.err.println(c);
+    // }
 
     // special case
     if (maxPointsFound < 12) {
@@ -244,12 +244,12 @@ public class TelephoneSystem{
       
       // terminate early if it exceeds 12 points inside the circle
       if (interiorPoints >= 12) {
-        System.err.println("boundary Points: " + boundaryPoints);
+        // System.err.println("boundary Points: " + boundaryPoints);
         int[] ret = {interiorPoints, boundaryPoints};
         return ret;
       }
     }
-    System.err.println("boundary Points: " + boundaryPoints);
+    // System.err.println("boundary Points: " + boundaryPoints);
     int[] ret = {interiorPoints, boundaryPoints};
     return ret;
   }
