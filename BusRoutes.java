@@ -139,14 +139,16 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    Route routeFrom = new Route(city_from, city_to, fare);
    Route routeTo = new Route(city_to, city_from, fare);
    int q = all_cities_str.indexOf(city_from.getCityName());
-   int contain = 1;
    
+   int contain = 1;
    City w = all_cities.get(q);
    for(Route c : all_routes) {
-	   if((routeFrom.getTo().getCityName().equals(c.getTo().getCityName())) &&
-			   (routeFrom.getFrom().getCityName().equals(c.getDest().getCityName()))
-			   ||(routeTo.getTo().getCityName().equals(c.getFrom().getCityName())) && 
-			   (routeTo.getFrom().getCityName().equals(c.getTo().getCityName())))
+	  
+	   if(((routeFrom.getTo().getCityName().equals(c.getTo().getCityName())) &&
+			   (routeFrom.getFrom().getCityName().equals(c.getFrom().getCityName())))
+			   
+			   ||((routeFrom.getTo().getCityName().equals(c.getFrom().getCityName())) && 
+			   (routeFrom.getFrom().getCityName().equals(c.getTo().getCityName()))))
 			   {
 		   System.out.println(city_from.getCityName());
 		   contain = 0;
@@ -154,21 +156,26 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
 	   }
    }
    if(q >= 0 && contain == 1) {// && contain == 1){
-     
      w.addRouteFrom(routeFrom);
      w.addRouteFrom(routeTo); //zzz
      
    }
    else if(contain == 1){
+
      city_from.addRouteFrom(routeFrom);
      city_from.addRouteFrom(routeTo);
+     //city_to.addRouteFrom(routeTo);
+    // city_to.addRouteFrom(routeFrom);
+     //all_routes.add(routeTo);
+     //all_routes.add(routeFrom);
    }
    
    else if (contain == 0) {
 	   System.out.println("Invalid: Non-unique routes");
    }
   
-   city_to.addRouteTo(routeTo);
+   //city_to.addRouteTo(routeTo);
+   //city_from.addRouteFrom(routeFrom);
    if (!(all_routes.contains(routeTo) || all_routes.contains(routeFrom))) {
     all_routes.add(routeTo);
    }
@@ -371,15 +378,6 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
     line = ifile.nextLine().toLowerCase();
     inputs = line.split(","); // split line into multiple strings, separated by comma
     
-    /**try{
-      System.out.println("FUCK");
-    if (inputs.length == 3) {
-      System.out.println("YOU");
-    }
-    }catch(Exception e){
-     System.out.println("Invalid: route set");
-    }
-    **/
     
     if(inputs.length != 3){
       System.out.println("Invalid: route set");
