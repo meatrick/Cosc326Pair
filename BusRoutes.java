@@ -320,9 +320,19 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    line = line.toLowerCase();
    String[] inputs = line.split(",");
    
+  /** try{
    if (inputs.length != 2) {
-    throw new Exception("Invalid: route set");
    }
+   }catch (Exception e){
+    System.out.println("Invalid: route");
+   }
+   **/
+   
+   if(inputs.length != 2){
+     System.out.println("Invalid: route");
+     return;
+   }
+   
    
    
    // instantiate Cities
@@ -339,8 +349,19 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
     line = ifile.nextLine().toLowerCase();
     inputs = line.split(","); // split line into multiple strings, separated by comma
     
-    if (inputs.length != 3) {
-     throw new Exception("Invalid: route");
+    /**try{
+      System.out.println("FUCK");
+    if (inputs.length == 3) {
+      System.out.println("YOU");
+    }
+    }catch(Exception e){
+     System.out.println("Invalid: route set");
+    }
+    **/
+    
+    if(inputs.length != 3){
+      System.out.println("Invalid: route set");
+      return;
     }
     
     
@@ -354,6 +375,7 @@ public void addRoute(City city_from, City city_to, double fare) throws Exception
    e.printStackTrace();
    ;//TODO: remove
   }
+  
   
   // use the method to find the cheapest route
   Vector<City> final_route = rm.findCheapestRoute(rm, final_city_from, final_city_to);
